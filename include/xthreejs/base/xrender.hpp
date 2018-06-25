@@ -48,7 +48,6 @@ namespace xthree
         XPROPERTY(int, derived_type, maxMorphTargets, 8);
         XPROPERTY(int, derived_type, maxMorphNormals, 4);
         XPROPERTY(bool, derived_type, physicallyCorrectLights, false);
-        XPROPERTY(xw::xholder<xwebgl_shadow_map>, derived_type, shadowMap, std::move(webgl_shadow_map()));
         XPROPERTY(bool, derived_type, sortObject, true);
         XPROPERTY(std::string, derived_type, toneMapping, "LinearToneMapping", xenums::ToneMappings);
         XPROPERTY(double, derived_type, toneMappingExposure, 1.0);
@@ -57,6 +56,9 @@ namespace xthree
         XPROPERTY(xw::html_color, derived_type, clearColor, "#000000");
         XPROPERTY(double, derived_type, clearOpacity, 1.0);
 
+        webgl_shadow_map& get_shadow_map();
+        const webgl_shadow_map& get_shadow_map() const;
+
     protected:
 
         xrender_widget();
@@ -64,6 +66,8 @@ namespace xthree
         using base_type::base_type;
 
     private:
+
+        XPROPERTY(xw::xholder<xwebgl_shadow_map>, derived_type, m_shadowMap);
 
         void set_defaults();
     };
@@ -92,13 +96,13 @@ namespace xthree
         xw::set_patch_from_property(maxMorphTargets, state, buffers);
         xw::set_patch_from_property(maxMorphNormals, state, buffers);
         xw::set_patch_from_property(physicallyCorrectLights, state, buffers);
-        xw::set_patch_from_property(shadowMap, state, buffers);
         xw::set_patch_from_property(sortObject, state, buffers);
         xw::set_patch_from_property(toneMapping, state, buffers);
         xw::set_patch_from_property(toneMappingExposure, state, buffers);
         xw::set_patch_from_property(toneMappingWhitePoint, state, buffers);
         xw::set_patch_from_property(clearColor, state, buffers);
         xw::set_patch_from_property(clearOpacity, state, buffers);
+        xw::set_patch_from_property(m_shadowMap, state, buffers);
     }
 
     template <class D>
@@ -121,13 +125,25 @@ namespace xthree
         xw::set_property_from_patch(maxMorphTargets, patch, buffers);
         xw::set_property_from_patch(maxMorphNormals, patch, buffers);
         xw::set_property_from_patch(physicallyCorrectLights, patch, buffers);
-        xw::set_property_from_patch(shadowMap, patch, buffers);
         xw::set_property_from_patch(sortObject, patch, buffers);
         xw::set_property_from_patch(toneMapping, patch, buffers);
         xw::set_property_from_patch(toneMappingExposure, patch, buffers);
         xw::set_property_from_patch(toneMappingWhitePoint, patch, buffers);
         xw::set_property_from_patch(clearColor, patch, buffers);
         xw::set_property_from_patch(clearOpacity, patch, buffers);
+        xw::set_property_from_patch(m_shadowMap, patch, buffers);
+    }
+
+    template <class D>
+    inline webgl_shadow_map& xrender_widget<D>::get_shadow_map()
+    {
+        return this->m_shadowMap().template get<webgl_shadow_map>();
+    }
+
+    template <class D>
+    inline const webgl_shadow_map& xrender_widget<D>::get_shadow_map() const
+    {
+        return this->m_shadowMap().template get<webgl_shadow_map>();
     }
 
     template <class D>
@@ -145,6 +161,7 @@ namespace xthree
         this->_view_module() = "jupyter-threejs";
         this->_view_module_version() = "1.0.0-beta.3";
 
+        this->m_shadowMap() = std::move(webgl_shadow_map());
     }
 
     //
